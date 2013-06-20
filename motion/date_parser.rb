@@ -5,7 +5,7 @@ module DateParser
   #
   # => 2013-02-20 09:00:00 -0800
   def self.parse_date(date_string)
-    detect(date_string).first.date
+    nil_or_value(detect(date_string), :date)
   end
 
   # Parse time zone from date
@@ -15,7 +15,7 @@ module DateParser
   # Caveat: This is implemented per Apple documentation. I've never really
   #         seen it work.
   def self.parse_time_zone(date_string)
-    detect(date_string).first.timeZone
+    nil_or_value(detect(date_string), :timeZone)
   end
 
   # Parse a date string: E.g.:
@@ -26,7 +26,7 @@ module DateParser
   #
   # Divide by 3600.0 to get number of hours duration.
   def self.parse_duration(date_string)
-    detect(date_string).first.send(:duration)
+    nil_or_value(detect(date_string), :duration)
   end
 
   # Parse a date into a raw match array for further processing
@@ -39,6 +39,10 @@ module DateParser
     error = Pointer.new(:object)
     detector = NSDataDetector.dataDetectorWithTypes(NSTextCheckingTypeDate, error:error)
     matches = detector.matchesInString(date_string, options:0, range:NSMakeRange(0, date_string.length))
+  end
+
+  def self.nil_or_value(match, property)
+    match.first.send(property) unless match.first.nil?
   end
 end
 
