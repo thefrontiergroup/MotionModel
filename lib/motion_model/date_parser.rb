@@ -5,7 +5,15 @@ module DateParser
   #
   # => 2013-02-20 09:00:00 -0800
   def self.parse_date(date_string)
-    detect(date_string).first.date
+    nil_or_value(detect(date_string).first) do |val|
+      val.date
+    end
+  end
+
+  def self.nil_or_value(val, &block)
+    unless val.nil?
+      block.call(val)
+    end
   end
 
   # Parse time zone from date
